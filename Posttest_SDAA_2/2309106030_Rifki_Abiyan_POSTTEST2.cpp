@@ -1,7 +1,6 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-// #include <string>
 
 struct bass_guitar{
     std::string nama_bass;
