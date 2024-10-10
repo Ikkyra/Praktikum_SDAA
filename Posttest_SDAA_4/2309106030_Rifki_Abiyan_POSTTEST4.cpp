@@ -1,0 +1,242 @@
+#include <iostream>
+#include <chrono>
+#include <thread>
+#define max_stack 4 
+#define max_queue 4 
+
+struct bass_guitar {
+    std::string nama_bass;
+    std::string brand;
+    float harga;
+};
+
+struct Node {
+    bass_guitar data;
+    Node* next;
+};
+
+// Stack 
+void push(Node** stack_top, bass_guitar new_bass, int& stack_counter);
+void pop(Node** stack_top, int& stack_counter);
+void peekStack(Node* stack_top);
+// Queue
+void enqueue(Node** queue_front, Node** queue_rear, bass_guitar new_bass, int& queue_counter);
+void dequeue(Node** queue_front, Node** queue_rear, int& queue_counter);
+void peekQueue(Node* queue_front);
+
+void jeda(int detik);
+int isInteger();
+float isFloat();
+bass_guitar input_bass_data();
+void display_bass(Node* node);
+int menu();
+
+void jeda(int detik) {
+    std::this_thread::sleep_for(std::chrono::seconds(detik));
+}
+
+int isInteger() {
+    int nilai;
+    while(true) {
+        std::cin >> nilai;
+        if(std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            std::cout << "Inputan Harus Berupa Angka." << std::endl;
+        } else {
+            std::cin.ignore(1000, '\n');
+            return nilai;
+        }
+    }
+}
+
+float isFloat() {
+    float nilai;
+    while(true) {
+        std::cin >> nilai;
+        if(std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            std::cout << "Inputan Harus Berupa Angka." << std::endl;
+        } else {
+            return nilai;
+        }
+    }
+}
+
+bass_guitar input_bass_data() {
+    bass_guitar new_bass;
+    std::cout << "Masukkan Model Bass: ";
+    std::getline(std::cin, new_bass.nama_bass);
+    std::cout << "Masukkan Brand Bass: ";
+    std::getline(std::cin, new_bass.brand);
+    std::cout << "Masukkan Harga Bass: ";
+    new_bass.harga = isFloat();
+    return new_bass;
+}
+
+void display_bass(Node* node) {
+    if (node) {
+        std::cout << "Model Bass Guitar: " << node->data.nama_bass << std::endl;
+        std::cout << "Brand: " << node->data.brand << std::endl;
+        std::cout << "Harga: " << node->data.harga << std::endl;
+        jeda(3);
+    }
+}
+
+// Stack 
+void push(Node** stack_top, bass_guitar new_bass, int& stack_counter) {
+    if (stack_counter == max_stack) {
+        std::cout << "Stack overflow! Tidak bisa menambahkan bass lebih dari " << max_stack << " elemen." << std::endl;
+        jeda(3);
+        return;
+    }
+    Node* new_node = new Node();
+    new_node->data = new_bass;
+    new_node->next = *stack_top;
+    *stack_top = new_node;
+    stack_counter++;
+    std::cout << "Bass Guitar Berhasil Ditambahkan ke Stack." << std::endl;
+    jeda(3);
+}
+
+void pop(Node** stack_top, int& stack_counter) {
+    if (*stack_top == nullptr) {
+        std::cout << "Stack Kosong, Tidak Ada Data Untuk Dihapus." << std::endl;
+        jeda(3);
+        return;
+    }
+    Node* temp = *stack_top;
+    *stack_top = (*stack_top)->next;
+    delete temp;
+    stack_counter--;
+    std::cout << "Bass Guitar Berhasil Dihapus dari Stack." << std::endl;
+    jeda(3);
+}
+
+void peekStack(Node* stack_top) {
+    if (stack_top == nullptr) {
+        std::cout << "Stack Kosong." << std::endl;
+        jeda(3);
+    } else {
+        std::cout << "Bass Guitar Paling Atas di Stack:" << std::endl;
+        display_bass(stack_top);
+        jeda(3);
+    }
+}
+
+// Queue
+void enqueue(Node** queue_front, Node** queue_rear, bass_guitar new_bass, int& queue_counter) {
+    if (queue_counter == max_queue) {
+        std::cout << "Queue overflow! Tidak bisa menambahkan bass lebih dari " << max_queue << " elemen." << std::endl;
+        jeda(3);
+        return;
+    }
+    Node* new_node = new Node();
+    new_node->data = new_bass;
+    new_node->next = nullptr;
+    
+    if (*queue_rear == nullptr) {
+        *queue_front = *queue_rear = new_node;
+    } else {
+        (*queue_rear)->next = new_node;
+        *queue_rear = new_node;
+    }
+    queue_counter++;
+    std::cout << "Bass Guitar Berhasil Ditambahkan ke Queue." << std::endl;
+    jeda(3);
+}
+
+void dequeue(Node** queue_front, Node** queue_rear, int& queue_counter) {
+    if (*queue_front == nullptr) {
+        std::cout << "Queue Kosong, Tidak Ada Data Untuk Dihapus." << std::endl;
+        jeda(3);
+        return;
+    }
+    Node* temp = *queue_front;
+    *queue_front = (*queue_front)->next;
+    if (*queue_front == nullptr) {
+        *queue_rear = nullptr; 
+    }
+    delete temp;
+    queue_counter--;
+    std::cout << "Bass Guitar Berhasil Dihapus dari Queue." << std::endl;
+    jeda(3);
+}
+
+void peekQueue(Node* queue_front) {
+    if (queue_front == nullptr) {
+        std::cout << "Queue Kosong." << std::endl;
+        jeda(3);
+    } else {
+        std::cout << "Bass Guitar Paling Depan di Queue:" << std::endl;
+        display_bass(queue_front);
+        jeda(3);
+    }
+}
+
+int menu() {
+    int pilihan;
+    std::cout << "=============================" << std::endl;
+    std::cout << "===   List Bass Guitar   ===" << std::endl;
+    std::cout << "=============================" << std::endl;
+    std::cout << "[1] Push Bass ke Stack     []" << std::endl;
+    std::cout << "[2] Pop Bass dari Stack    []" << std::endl;
+    std::cout << "[3] Peek Bass di Stack     []" << std::endl;
+    std::cout << "[4] Enqueue Bass ke Queue  []" << std::endl;
+    std::cout << "[5] Dequeue Bass dari Queue[]" << std::endl;
+    std::cout << "[6] Peek Bass di Queue     []" << std::endl;
+    std::cout << "[7] Keluar                 []" << std::endl;  
+    std::cout << "=============================" << std::endl;
+    std::cout << "Pilihan: ";
+    pilihan = isInteger();
+    while (pilihan < 1 || pilihan > 7) {
+        std::cout << "Pilihan Tidak Valid, Masukkan Angka 1-7" << std::endl;
+        pilihan = isInteger();
+    }
+    return pilihan;
+}
+
+int main() {
+    Node* stack_top = nullptr;
+    Node* queue_front = nullptr;
+    Node* queue_rear = nullptr;
+    int stack_counter = 0;
+    int queue_counter = 0;
+    int pilihan;
+
+    do {
+        pilihan = menu();
+        bass_guitar new_bass;
+
+        switch (pilihan) {
+            case 1:
+                new_bass = input_bass_data();
+                push(&stack_top, new_bass, stack_counter);
+                break;
+            case 2:
+                pop(&stack_top, stack_counter);
+                break;
+            case 3:
+                peekStack(stack_top);
+                break;
+            case 4:
+                new_bass = input_bass_data();
+                enqueue(&queue_front, &queue_rear, new_bass, queue_counter);
+                break;
+            case 5:
+                dequeue(&queue_front, &queue_rear, queue_counter);
+                break;
+            case 6:
+                peekQueue(queue_front);
+                break;
+            case 7:
+                std::cout << "Keluar Dari Program" << std::endl;
+                break;
+            default:
+                std::cout << "Pilihan Tidak Valid" << std::endl;
+        }
+    } while (pilihan != 7);
+
+    return 0;
+}
